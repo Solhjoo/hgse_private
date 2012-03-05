@@ -1,17 +1,21 @@
-function [data] = ebm2ft(subj)
+function [data] = ebm2ft(subj, recdir)
 %EBM2FT read embla folder and transform into fieldtrip dataset
 % Use as:
 %   [data] = ebm2ft(subj)
 % where subj is the number of the subject
-
-% 11/10/26 created
+%
+% Optionally, you can use as:
+%   [data] = ebm2ft(subj, recdir)
+% where recdir specifies the directory with the data
 
 epdur = 30;
 scaling = 1e6; % V into uV
 
 %-------------------------------------%
 %-dir and files
-recdir = '/data/projects/hgse/BLIND/';
+if nargin == 1
+  recdir = '/data/projects/hgse/BLIND/';
+end
 channels = {'Fpz' 'Cz'};
 
 sdir = sprintf('%s%02.f/', recdir, subj);
