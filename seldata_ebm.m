@@ -21,12 +21,12 @@ if isdir(ddir); rmdir(ddir, 's'); end
 mkdir(ddir)
 
 [cond unit] = getblind(subj);
-dfile = sprintf('%s_%04.f_%s_%s_c%1.f_u%02.f', cfg.proj, subj, cfg.mod, cfg.cond, cond, unit);
+dfile = sprintf('%s_%04.f_%s_%s_c%1.f_u%02.f', cfg.proj, subj, cfg.mod, 'sleep', cond, unit);
 %---------------------------%
 
 %---------------------------%
 %-read data
-data = emb2ft(subj, cfg.rec);
+data = ebm2ft(subj, cfg.recs);
 save([ddir dfile], 'data')
 %---------------------------%
 

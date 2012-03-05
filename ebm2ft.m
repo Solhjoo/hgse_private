@@ -26,8 +26,27 @@ sdir = sprintf('%s%02.f/', recdir, subj);
 evt = readevents([sdir 'Events.txt']);
 art = readevents([sdir 'Eventa.txt']);
 
-if ~isempty(setdiff([evt.timestamp], [art.timestamp]))
-  warning('time stamps between Events.txt and Eventa.txt do not match')
+if ~isempty(setxor([evt.timestamp], [art.timestamp]))
+  %-----------------%
+  %-remove missing timestamps
+  n_evt = numel([evt.timestamp]);
+  n_art = numel([art.timestamp]);
+  
+  [~, e, a] = intersect([evt.timestamp], [art.timestamp]);
+  evt.state = evt.state(e);
+  evt.statedescription = evt.statedescription(e);
+  evt.timestamp = evt.timestamp(e);
+  evt.timedescription = evt.timedescription(e);
+  
+  artstate = art.state(e);
+  art.statedescription = art.statedescription(e);
+  art.timestamp = art.timestamp(e);
+  art.timedescription = art.timedescription(e);
+  %-----------------%
+  
+  warning(sprintf(['time stamps of Events.txt and Eventa.txt do not match\n' ...
+    'There were% 4.f events and% 4.f artifacts, now% 4.f events and% 4.f artifacts\n'], ...
+    n_evt, n_art, numel(evt.timestamp), numel(art.timestamp)))
 end
 %-------------------------------------%
 
