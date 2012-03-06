@@ -1,8 +1,15 @@
-function seldata_ebm(cfg, subj)
-%SELDATA_EBM read children's data and convert them into fieldtrip format
+function selebm(cfg, subj)
+%SELEBM read children's data and convert them into fieldtrip format
 % It creates the normal subject structure.
 % The file names contains information on the condition the child was
 % assigned to (c) and the unit of the child (u)
+%
+% CFG
+%  .proj: project name
+%  .data: name of projects/PROJNAME/subjects/
+%  .mod: name of the modality used in recordings and projects
+%  .cond: name to be used in projects/PROJNAME/subjects/0001/MOD/CONDNAME/
+%  .recs: folder with the original children's recordings
 % 
 % Part of HGSE_PRIVATE
 % See also EBM2FT
@@ -21,13 +28,31 @@ if isdir(ddir); rmdir(ddir, 's'); end
 mkdir(ddir)
 
 [cond unit] = getblind(subj);
-dfile = sprintf('%s_%04.f_%s_%s_c%1.f_u%02.f', cfg.proj, subj, cfg.mod, 'sleep', cond, unit);
+dfile = sprintf('%s_%04.f_%s_%s_c%1.f_u%02.f_%s', cfg.proj, subj, cfg.mod, 'sleep', cond, unit, mfilename);
 %---------------------------%
 
 %---------------------------%
 %-read data
 data = ebm2ft(subj, cfg.recs);
 save([ddir dfile], 'data')
+%---------------------------%
+
+%---------------------------%
+%-some feedback
+outtmp = sprintf('stage awake:% 4.f\nstage NREM1:% 4.f\nstage NREM2:% 4.f\nstage NREM3:% 4.f\nstage NREM4:% 4.f\nstage REM  :% 4.f\nmovement   :% 4.f\n\n', ...
+  numel(find(data.trialinfo(:,2)==0)), ...
+  numel(find(data.trialinfo(:,2)==1)), ...
+  numel(find(data.trialinfo(:,2)==2)), ...
+  numel(find(data.trialinfo(:,2)==3)), ...
+  numel(find(data.trialinfo(:,2)==4)), ...
+  numel(find(data.trialinfo(:,2)==5)), ...
+  numel(find(data.trialinfo(:,2)==6)));
+output = [output outtmp];
+
+outtmp = sprintf('good epochs:% 4.f\n bad epochs:% 4.f\n\n', ...
+  numel(find(data.trialinfo(:,3)==0)), ...
+  numel(find(data.trialinfo(:,3)==1)));
+output = [output outtmp];
 %---------------------------%
 
 %---------------------------%
@@ -87,4 +112,4 @@ i = blind(:,2) == subj;
 
 unit = floor(blind(i,1)/ 10);
 cond = mod(blind(i,1), 10);
-
+%---------------------------%
