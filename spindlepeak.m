@@ -7,6 +7,10 @@ function spindlepeak(cfg)
 %  .log: name of the file and directory with analysis log
 %  .rslt: directory images are saved into
 %  .dpow: directory to save POW data
+%
+%  .pow.bl: if empty, no baseline. Otherwise:
+%  .pow.bl.baseline: two scalars with baseline windows
+%  .pow.bl.baselinetype: type of baseline ('relchange')
 % 
 %  .sppeak.freq: two values with limits for frequency
 %  .sppeak.time: two values with limits for time
@@ -51,10 +55,23 @@ for k = 1:numel(cfg.test)
     freqfile = sprintf('pow_%02.f_%s.mat', subj, condname);
     
     if exist([cfg.dpow freqfile], 'file')
+      
       load([cfg.dpow freqfile], 'freq')
+      
+      %-------%
+      %-baseline correction
+      if ~isempty(cfg.pow.bl)
+        cfg3 = [];
+        cfg3.baseline = cfg.pow.bl.baseline;
+        cfg3.baselinetype = cfg.pow.bl.baselinetype;
+        freq = ft_freqbaseline(cfg3, freq);
+      end
+      %-------%
+      
     else
       output = [output sprintf('   %02.f: %s does not exist in %s\n', subj, freqfile, cfg.dpow)];
       continue
+      
     end
     %-----------------%
     
