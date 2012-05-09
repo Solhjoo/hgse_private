@@ -93,7 +93,7 @@ for i = 1:numel(dataorig.label)
   %-create trials
   trl = [];
   trl(:,1) = [sw{i}.(cfg.redefsw.event)]' - .5 * dataorig.fsample * cfg.redefsw.dur;
-  trl(:,2) = [sw{i}.(cfg.redefsw.event)]' + .5 * dataorig.fsample * cfg.redefsw.dur;
+  trl(:,2) = [sw{i}.(cfg.redefsw.event)]' + .5 * dataorig.fsample * cfg.redefsw.dur - 1;
   trl(:,3) = - .5 * dataorig.fsample * cfg.redefsw.dur;
   %-----------------%
   
