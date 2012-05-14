@@ -3,9 +3,9 @@ function redefsw(cfg, subj)
 %
 % CFG
 %  .proj: project name
-%  .data: name of projects/PROJNAME/subjects/
+%  .data: name of projects/PROJ/subjects/
 %  .mod: name of the modality used in recordings and projects
-%  .cond: name to be used in projects/PROJNAME/subjects/0001/MOD/CONDNAME/
+%  .nick: name to be used in projects/PROJ/subjects/0001/MOD/NICK/
 %
 %  .redefsw.stage: stage of interest
 %  .redefsw.rejart: reject artifacts or not (logical)
@@ -13,19 +13,21 @@ function redefsw(cfg, subj)
 %  .redefsw.sw: a structure, used for slow wave detection as detect_slowwave(cfg.redefsw.sw, data)
 %  .redefsw.event: 'negpeak_iabs' (take it from detect_slowwave, should end in '_iabs')
 %  .redefsw.dur: total duration of the trial
-
+%
+% Part of HGSE_PRIVATE
+% See also SELEBM, REDEFSW, CLEANSW
 
 %---------------------------%
 %-start log
-output = sprintf('(p%02.f) %s started at %s on %s\n', ...
-  subj, mfilename,  datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
+output = sprintf('%s (%04d) began at %s on %s\n', ...
+  mfilename, subj, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
 tic_t = tic;
 %---------------------------%
 
 %---------------------------%
 %-dir and files
-ddir = sprintf('%s%04.f/%s/%s/', cfg.data, subj, cfg.mod, cfg.cond); % data
-dname = sprintf('%s_%04.f_%s_%s_*%s.mat', cfg.proj, subj, cfg.mod, 'sleep', cfg.endname);
+ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data
+dname = sprintf('%s_%04d_%s_%s_*%s.mat', cfg.proj, subj, cfg.mod, 'sleep', cfg.endname);
 dnames = dir([ddir dname]);
 
 if numel(dnames) ~= 0
@@ -48,7 +50,7 @@ n_ep = numel(find(ep));
 epa = ep & data.trialinfo(:,3) ~= 1; % ep, no artifacts
 n_epa = numel(find(epa));
 
-outtmp = sprintf('Epochs in stages of interest:% 4.f\nEpochs without artifacts:%4.f\n', n_ep, n_epa);
+outtmp = sprintf('Epochs in stages of interest:% 4d\nEpochs without artifacts:%4d\n', n_ep, n_epa);
 output = [output outtmp];
 %-----------------%
 
@@ -77,7 +79,7 @@ for i = 1:numel(data.label)
   
   %-------%
   %-feedback
-  outtmp = sprintf('% 4.f slow waves in %s\n', numel(sw{i}), data.label{i});
+  outtmp = sprintf('% 4d slow waves in %s\n', numel(sw{i}), data.label{i});
   output = [output outtmp];
   %-------%
   
@@ -113,7 +115,7 @@ for i = 1:numel(dataorig.label)
   
   %-------%
   %-feedback
-  outtmp = sprintf('final number of trials at channel %s:% 4.f\n', dataorig.label{i}, size(trl,1));
+  outtmp = sprintf('final number of trials at channel %s:% 4d\n', dataorig.label{i}, size(trl,1));
   output = [output outtmp];
   %-------%
   
@@ -129,8 +131,8 @@ end
 %---------------------------%
 %-end log
 toc_t = toc(tic_t);
-outtmp = sprintf('(p%02.f) %s ended at %s on %s after %s\n\n', ...
-  subj, mfilename, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'), ...
+outtmp = sprintf('%s (%04d) ended at %s on %s after %s\n\n', ...
+  mfilename, subj, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'), ...
   datestr( datenum(0, 0, 0, 0, 0, toc_t), 'HH:MM:SS'));
 output = [output outtmp];
 

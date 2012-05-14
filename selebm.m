@@ -6,29 +6,29 @@ function selebm(cfg, subj)
 %
 % CFG
 %  .proj: project name
-%  .data: name of projects/PROJNAME/subjects/
+%  .data: name of projects/PROJ/subjects/
 %  .mod: name of the modality used in recordings and projects
-%  .cond: name to be used in projects/PROJNAME/subjects/0001/MOD/CONDNAME/
+%  .nick name to be used in projects/PROJ/subjects/0001/MOD/NICK/
 %  .recs: folder with the original children's recordings
 % 
 % Part of HGSE_PRIVATE
-% See also EBM2FT
+% See also SELEBM, REDEFSW, CLEANSW
 
 %---------------------------%
 %-start log
-output = sprintf('(p%02.f) %s started at %s on %s\n', ...
-  subj, mfilename,  datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
+output = sprintf('%s (%04d) began at %s on %s\n', ...
+  mfilename, subj, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
 tic_t = tic;
 %---------------------------%
 
 %---------------------------%
 %-dir and files
-ddir = sprintf('%s%04.f/%s/%s/', cfg.data, subj, cfg.mod, cfg.cond); % data
+ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data
 if isdir(ddir); rmdir(ddir, 's'); end
 mkdir(ddir)
 
 [cond unit] = getblind(subj);
-dfile = sprintf('%s_%04.f_%s_%s_c%1.f_u%02.f_%s', cfg.proj, subj, cfg.mod, 'sleep', cond, unit, mfilename);
+dfile = sprintf('%s_%s_%04d_%s_%s_c%1d_u%02d_%s', cfg.nick, cfg.rec, subj, cfg.mod, 'sleep', cond, unit, mfilename);
 %---------------------------%
 
 %---------------------------%
@@ -39,7 +39,7 @@ save([ddir dfile], 'data')
 
 %---------------------------%
 %-some feedback
-outtmp = sprintf('stage awake:% 4.f\nstage NREM1:% 4.f\nstage NREM2:% 4.f\nstage NREM3:% 4.f\nstage NREM4:% 4.f\nstage REM  :% 4.f\nmovement   :% 4.f\n\n', ...
+outtmp = sprintf('stage awake:% 4d\nstage NREM1:% 4d\nstage NREM2:% 4d\nstage NREM3:% 4d\nstage NREM4:% 4d\nstage REM  :% 4d\nmovement   :% 4d\n\n', ...
   numel(find(data.trialinfo(:,2)==0)), ...
   numel(find(data.trialinfo(:,2)==1)), ...
   numel(find(data.trialinfo(:,2)==2)), ...
@@ -49,7 +49,7 @@ outtmp = sprintf('stage awake:% 4.f\nstage NREM1:% 4.f\nstage NREM2:% 4.f\nstage
   numel(find(data.trialinfo(:,2)==6)));
 output = [output outtmp];
 
-outtmp = sprintf('good epochs:% 4.f\n bad epochs:% 4.f\n\n', ...
+outtmp = sprintf('good epochs:% 4d\n bad epochs:% 4d\n\n', ...
   numel(find(data.trialinfo(:,3)==0)), ...
   numel(find(data.trialinfo(:,3)==1)));
 output = [output outtmp];
@@ -58,8 +58,8 @@ output = [output outtmp];
 %---------------------------%
 %-end log
 toc_t = toc(tic_t);
-outtmp = sprintf('(p%02.f) %s ended at %s on %s after %s\n\n', ...
-  subj, mfilename, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'), ...
+outtmp = sprintf('%s (%04d) ended at %s on %s after %s\n\n', ...
+  mfilename, subj, datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'), ...
   datestr( datenum(0, 0, 0, 0, 0, toc_t), 'HH:MM:SS'));
 output = [output outtmp];
 
