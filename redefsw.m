@@ -2,7 +2,7 @@ function redefsw(cfg, subj)
 %REDEFSW detect slow waves and create trials around them
 %
 % CFG
-%  .proj: project name
+%  .rec: name of the recording (it's '')
 %  .data: name of projects/PROJ/subjects/
 %  .mod: name of the modality used in recordings and projects
 %  .nick: name to be used in projects/PROJ/subjects/0001/MOD/NICK/
@@ -27,7 +27,7 @@ tic_t = tic;
 %---------------------------%
 %-dir and files
 ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data
-dname = sprintf('%s_%04d_%s_%s_*%s.mat', cfg.proj, subj, cfg.mod, 'sleep', cfg.endname);
+dname = sprintf('%s_%s_%04d_%s_%s_*%s.mat', cfg.nick, cfg.rec, subj, cfg.mod, 'sleep', cfg.endname);
 dnames = dir([ddir dname]);
 
 if numel(dnames) ~= 0

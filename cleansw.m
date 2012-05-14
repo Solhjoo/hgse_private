@@ -30,19 +30,26 @@ output = sprintf('%s (%04d) began at %s on %s\n', ...
 tic_t = tic;
 %---------------------------%
 
+
 %---------------------------%
 %-dir and files
-ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data dir
-allfile = dir([ddir '*' cfg.endname '.mat']); % files matching a preprocessing
+ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data
+dname = sprintf('%s_%s_%04d_%s_%s_*%s.mat', cfg.nick, cfg.rec, subj, cfg.mod, 'sleep', cfg.endname);
+dnames = dir([ddir dname]);
+
+if numel(dnames) ~= 0
+  warning(sprintf('could not find any (%s) matching file in %s', dname, ddir))
+  return
+end
 %---------------------------%
 
 %-----------------------------------------------%
 %-loop over files
-for i = 1:numel(allfile)
+for i = 1:numel(dnames)
   
   %--------------------------%
   %-data file
-  dfile = allfile(i).name;
+  dfile = dnames(i).name;
   load([ddir dfile], 'data')
   
   basicname = dfile(1:strfind(dfile, cfg.endname)-1);

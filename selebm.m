@@ -5,7 +5,7 @@ function selebm(cfg, subj)
 % assigned to (c) and the unit of the child (u)
 %
 % CFG
-%  .proj: project name
+%  .rec: name of the recording (it's '')
 %  .data: name of projects/PROJ/subjects/
 %  .mod: name of the modality used in recordings and projects
 %  .nick name to be used in projects/PROJ/subjects/0001/MOD/NICK/
