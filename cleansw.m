@@ -122,7 +122,7 @@ for i = 1:numel(dnames)
   %--------------------------%
   
   %--------------------------%
-  %-clean up data
+  %-get good trials
   oktrial = all(oktrial,2);
   if ~any(oktrial)
     output = sprintf('%sThe whole dataset of% 4d epochs was rejected!!!\n', output, numel(data.trial));
@@ -130,6 +130,13 @@ for i = 1:numel(dnames)
   end
   output = sprintf('%s  good epochs #% 5d, bad epochs #% 5d\n', ...
     output, numel(find(oktrial)), numel(find(~oktrial)));
+  %--------------------------%
+  
+  %--------------------------%
+  %-clean up data
+  data.trial = data.trial(oktrial);
+  data.time = data.time(oktrial);
+  data.sampleinfo = data.sampleinfo(oktrial,:);
   %--------------------------%
   
   %--------------------------%

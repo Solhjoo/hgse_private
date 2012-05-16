@@ -15,3 +15,9 @@ output = [output sprintf(' %d,', cfg.redefsw.sw.zeropad)];
 
 output = [output sprintf(' %s,', cfg.redefsw.event)];
 output = [output sprintf(' %d,', cfg.redefsw.dur)];
+
+for i = 1:numel(cfg.cleansw.auto)
+  output = [output sprintf(' %s,', cfg.cleansw.auto(i).met)];
+  output = [output sprintf(' %d,', cfg.cleansw.auto(i).thr)];
+end
+
