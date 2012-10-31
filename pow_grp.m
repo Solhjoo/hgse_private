@@ -115,7 +115,7 @@ for g = 1:numel(cfg.grppow.grp)
     [pow_peak stat outtmp] = reportcluster(cfg, gpowall1, gpowall2, false);
     %-----------------%
     
-    save([cfg.dpow 'pow_peak_grp_' comp], 'pow_peak', 'stat')
+    save([cfg.dpow 'pow_peak_grp_' comp], 'pow_peak', 'stat', 'gplot')
     output = [output outtmp];
     %---------------------------%
     
