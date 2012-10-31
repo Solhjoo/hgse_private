@@ -137,6 +137,7 @@ for i = 1:numel(dnames)
   data.trial = data.trial(oktrial);
   data.time = data.time(oktrial);
   data.sampleinfo = data.sampleinfo(oktrial,:);
+  data.trialinfo = data.trialinfo(oktrial,:);
   %--------------------------%
   
   %--------------------------%
