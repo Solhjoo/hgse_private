@@ -47,7 +47,7 @@ end
 ep = ismember(data.trialinfo(:,2), cfg.redefsw.stage);
 n_ep = numel(find(ep));
 
-epa = ep & data.trialinfo(:,3) ~= 1; % ep, no artifacts
+epa = ep & data.trialinfo(:,3) == 1; % ep, with OK epochs
 n_epa = numel(find(epa));
 
 outtmp = sprintf('Epochs in stages of interest:% 4d\nEpochs without artifacts:%4d\n', n_ep, n_epa);

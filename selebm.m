@@ -39,20 +39,24 @@ save([ddir dfile], 'data')
 
 %---------------------------%
 %-some feedback
-outtmp = sprintf('stage awake:% 4d\nstage NREM1:% 4d\nstage NREM2:% 4d\nstage NREM3:% 4d\nstage NREM4:% 4d\nstage REM  :% 4d\nmovement   :% 4d\n\n', ...
-  numel(find(data.trialinfo(:,2)==0)), ...
-  numel(find(data.trialinfo(:,2)==1)), ...
-  numel(find(data.trialinfo(:,2)==2)), ...
-  numel(find(data.trialinfo(:,2)==3)), ...
-  numel(find(data.trialinfo(:,2)==4)), ...
-  numel(find(data.trialinfo(:,2)==5)), ...
-  numel(find(data.trialinfo(:,2)==6)));
+a_epoch = size(data.trialinfo,1);
+g_epoch = numel(find(data.trialinfo(:,3) == 1));
+b_epoch = numel(find(data.trialinfo(:,3) == 0));
+
+outtmp = sprintf('%s: all epochs% 5d\tgood epochs% 5d\tbad epochs% 5d\t (%7.2f perc is bad)\n\n', ...
+  'recording  ', a_epoch, g_epoch, b_epoch, b_epoch/a_epoch * 100);
 output = [output outtmp];
 
-outtmp = sprintf('good epochs:% 4d\n bad epochs:% 4d\n\n', ...
-  numel(find(data.trialinfo(:,3)==0)), ...
-  numel(find(data.trialinfo(:,3)==1)));
-output = [output outtmp];
+stages = {'stage awake' 'stage NREM1' 'stage NREM2' 'stage NREM3' 'stage NREM4', 'stage REM  ', 'movement   '};
+for i = 1:numel(stages)
+  a_epoch = numel(find(data.trialinfo(:,2) == (i-1)));
+  g_epoch = numel(find(data.trialinfo(:,2) == (i-1) & data.trialinfo(:,3) == 1));
+  b_epoch = numel(find(data.trialinfo(:,2) == (i-1) & data.trialinfo(:,3) == 0));
+  
+  outtmp = sprintf('%s: all epochs% 5d\tgood epochs% 5d\tbad epochs% 5d\t (%7.2f perc is bad)\n', ...
+    stages{i}, a_epoch, g_epoch, b_epoch, b_epoch/a_epoch * 100);
+  output = [output outtmp];
+end
 %---------------------------%
 
 %---------------------------%
