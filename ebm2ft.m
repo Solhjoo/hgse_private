@@ -51,6 +51,26 @@ end
 %-------------------------------------%
 
 %-------------------------------------%
+%-subj 12, at 7:00:40, time is repeated:
+% S2	07:00:40	SLEEP-S2	30
+% S2	07:00:40	SLEEP-S0	30
+% Also note the discrepancy between 'S2' in the 1st column and 'SLEEP-S0'
+% in the 3rd column
+d_evt = find(diff(evt.timestamp) == 0);
+
+if ~isempty(d_evt)
+  evt.timestamp(d_evt) = [];
+  evt.state(d_evt) = [];
+  evt.timedescription(d_evt) = [];
+  evt.statedescription(d_evt) = [];
+  evt.stopepoch = evt.stopepoch - numel(d_evt);
+  
+  warning('removed %d duplicated epoch', numel(d_evt));
+  
+end
+%-------------------------------------%
+
+%-------------------------------------%
 %-read data for each channels
 for c = 1:numel(channels)
   
