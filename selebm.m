@@ -34,6 +34,13 @@ dfile = sprintf('%s_%s_%04d_%s_%s_c%1d_u%02d_%s', cfg.nick, cfg.rec, subj, cfg.m
 %---------------------------%
 %-read data
 data = ebm2ft(subj, cfg.recs);
+
+if isfield(cfg, 'invertpol') && cfg.invertpol
+  for i = 1:numel(data.trial)
+    data.trial{i} = data.trial{i} * -1;
+  end
+end
+
 save([ddir dfile], 'data')
 %---------------------------%
 
