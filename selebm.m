@@ -1,10 +1,10 @@
-function selebm(cfg, subj)
+function selebm(info, opt, subj)
 %SELEBM read children's data and convert them into fieldtrip format
 % It creates the normal subject structure.
 % The file names contains information on the condition the child was
 % assigned to (c) and the unit of the child (u)
 %
-% CFG
+% INFO
 %  .rec: name of the recording (it's '')
 %  .data: name of projects/PROJ/subjects/
 %  .mod: name of the modality used in recordings and projects
@@ -23,19 +23,19 @@ tic_t = tic;
 
 %---------------------------%
 %-dir and files
-ddir = sprintf('%s%04d/%s/%s/', cfg.data, subj, cfg.mod, cfg.nick); % data
+ddir = sprintf('%s%04d/%s/%s/', info.data, subj, info.mod, info.nick); % data
 if isdir(ddir); rmdir(ddir, 's'); end
 mkdir(ddir)
 
 [cond unit] = getblind(subj);
-dfile = sprintf('%s_%s_%04d_%s_%s_c%1d_u%02d_%s', cfg.nick, cfg.rec, subj, cfg.mod, 'sleep', cond, unit, mfilename);
+dfile = sprintf('%s_%s_%04d_%s_%s_c%1d_u%02d_%s', info.nick, info.rec, subj, info.mod, 'sleep', cond, unit, 'A');
 %---------------------------%
 
 %---------------------------%
 %-read data
-data = ebm2ft(subj, cfg.recs);
+data = ebm2ft(subj, info.recs);
 
-if isfield(cfg, 'invertpol') && cfg.invertpol
+if isfield(opt, 'invertpol') && opt.invertpol
   for i = 1:numel(data.trial)
     data.trial{i} = data.trial{i} * -1;
   end
@@ -76,7 +76,7 @@ output = [output outtmp];
 
 %-----------------%
 fprintf(output)
-fid = fopen([cfg.log '.txt'], 'a');
+fid = fopen([info.log '.txt'], 'a');
 fwrite(fid, output);
 fclose(fid);
 %-----------------%
