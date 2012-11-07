@@ -60,8 +60,19 @@ for i = 1:numel(dnames)
   
   %-------------------------------------%
   %-loop over epoch
-  oktrial = true(numel(data.trial), 3);
-  val = NaN(numel(data.trial), 3); % three methods
+  oktrial = true(numel(data.trial), numel(cfg.cleansw.auto));
+  val = NaN(numel(data.trial), numel(cfg.cleansw.auto)); 
+  
+  %--------------------------%
+  %-high-pass filter
+  if any(strcmp('hifreqvar', {cfg.cleansw.auto.met}))
+    tmpcfg = [];
+    tmpcfg.hpfilter = 'yes';
+    tmpcfg.hpfreq = 40;
+    tmpcfg.feedback = 'none';
+    dat = ft_preprocessing(tmpcfg, data);
+  end
+  %--------------------------%
   
   for e = 1:numel(data.trial)
     
@@ -76,6 +87,12 @@ for i = 1:numel(dnames)
           %-------%
           %-compute var
           allchan = std([data.trial{e}], [], 2).^2;
+          %-------%
+          
+        case 'hifreqvar'
+          %-------%
+          %-high-pass for high frequency and compute var
+          allchan = std([dat.trial{e}], [], 2).^2;
           %-------%
           
         case 'range'
