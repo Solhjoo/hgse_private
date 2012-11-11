@@ -9,6 +9,8 @@ function cleansw(info, opt, subj)
 %  .log: name of the file and directory to save log
 %
 % OPT
+%  .preproc: options to pass to preprocessing (especially to filter or
+%            remove, .bsfilter = 'yes'; .bsfreq = [49 51];
 %  .cleansw.auto(1).met: method to automatically find bad
 %                                    channels ('var' 'range' 'diff')
 %  .cleansw.auto(1).thr: in microvolts (10000, 3000, 1000)
@@ -55,6 +57,13 @@ for i = 1:numel(dnames)
   outputfile = [basicname '_A_B_C'];
   
   output = sprintf('%s\n%s\n', output, dfile);
+  %--------------------------%
+  
+  %--------------------------%
+  %-remove 50 Hz noise
+  if isfield(opt, 'preproc') && ~isempty(opt.preproc)
+    data = ft_preprocessing(opt.preproc, data);
+  end
   %--------------------------%
   
   %-------------------------------------%
