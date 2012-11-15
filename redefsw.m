@@ -14,6 +14,7 @@ function redefsw(info, opt, subj)
 %  .redefsw.sw: a structure, used for slow wave detection as detect_slowwave(opt.redefsw.sw, data)
 %  .redefsw.event: 'negpeak_iabs' (take it from detect_slowwave, should end in '_iabs')
 %  .redefsw.dur: total duration of the trial
+%  .swdist: min distance from preceding slow wave (in s)
 %
 % Part of HGSE_PRIVATE
 % See also SELEBM, REDEFSW, CLEANSW
@@ -84,6 +85,18 @@ for i = 1:numel(data.label)
   output = [output outtmp];
   %-------%
   
+end
+%---------------------------%
+
+%---------------------------%
+%-only keep isolate SW
+if ~isfield(opt, 'swdist')
+  opt.swdist = Inf;
+end
+
+for i = 1:numel(sw)
+  d_sw = diff([sw{i}.negpeak_time]);
+  sw{i} = sw{i}([true d_sw > opt.swdist]);
 end
 %---------------------------%
 
