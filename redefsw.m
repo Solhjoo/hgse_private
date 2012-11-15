@@ -91,7 +91,7 @@ end
 %---------------------------%
 %-only keep isolate SW
 if ~isfield(opt, 'swdist')
-  opt.swdist = Inf;
+  opt.swdist = 0;
 end
 
 for i = 1:numel(sw)
