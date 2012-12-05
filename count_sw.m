@@ -21,7 +21,18 @@ tic_t = tic;
 %-loop over groups
 for g = 1:numel(opt.grp)
   
-  summary = nan(numel(opt.stage), 8, numel(opt.grp(g).subj));
+  s_ep_all = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_ep_good = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_ep_bad = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_ep_percent = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  
+  s_sw_Fpz_ep = nan(numel(opt.stage), numel(opt.grp(g).subj)); % epochs with slow waves
+  s_sw_Fpz = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_sw_Fpz_good = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  
+  s_sw_Cz_ep = nan(numel(opt.stage), numel(opt.grp(g).subj)); % epochs with slow waves
+  s_sw_Cz = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_sw_Cz_good = nan(numel(opt.stage), numel(opt.grp(g).subj));
   
   %-------------------------------------%
   %-loop over subjects
@@ -34,8 +45,10 @@ for g = 1:numel(opt.grp)
     load([ddir dfile(1).name])
     
     for st = 1:numel(opt.stage)
-      summary(st,1,s) = opt.stage(st); % stage
-      summary(st,2,s) = numel(find(data.trialinfo(:,2) == opt.stage(st))); % all epochs
+      s_ep_all(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st))); % all epochs
+      s_ep_good(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st) & data.trialinfo(:,3) == 1)); % good epochs
+      s_ep_bad(st,s) = s_ep_all(st,s) - s_ep_good(st,s); % bad epochs
+      s_ep_percent(st,s) = s_ep_bad(st,s) / s_ep_all(st,s) * 100; % percentage bad
     end
     %---------------------------%
     
@@ -45,8 +58,8 @@ for g = 1:numel(opt.grp)
     if ~isempty(dfile)
       load([ddir dfile(1).name])
       for st = 1:numel(opt.stage)
-        summary(st,3,s) = numel(unique(data.trialinfo( data.trialinfo(:,2) == opt.stage(st),1))); % number of epochs with slow waves
-        summary(st,4,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
+        s_sw_Fpz_ep(st,s) = numel(unique(data.trialinfo( data.trialinfo(:,2) == opt.stage(st),1))); % number of epochs with slow waves
+        s_sw_Fpz(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
     end
     
@@ -54,8 +67,8 @@ for g = 1:numel(opt.grp)
     if ~isempty(dfile)
       load([ddir dfile(1).name])
       for st = 1:numel(opt.stage)
-        summary(st,5,s) = numel(unique(data.trialinfo( data.trialinfo(:,2) == opt.stage(st),1))); % number of epochs with slow waves
-        summary(st,6,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
+        s_sw_Cz_ep(st,s) = numel(unique(data.trialinfo( data.trialinfo(:,2) == opt.stage(st),1))); % number of epochs with slow waves
+        s_sw_Cz(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
     end
     %---------------------------%
@@ -66,7 +79,7 @@ for g = 1:numel(opt.grp)
     if ~isempty(dfile)
       load([ddir dfile(1).name])
       for st = 1:numel(opt.stage)
-        summary(st,7,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
+        s_sw_Fpz_good(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
     end
     
@@ -74,7 +87,7 @@ for g = 1:numel(opt.grp)
     if ~isempty(dfile)
       load([ddir dfile(1).name])
       for st = 1:numel(opt.stage)
-        summary(st,8,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
+        s_sw_Cz_good(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
     end
     %---------------------------%
@@ -94,17 +107,17 @@ for g = 1:numel(opt.grp)
     
     %---------------------------%
     %-values
-    scored_min{1} = summary(st,2,:) * 2;
-    scored_min{2} = summary(st,2,:) * 2; % identical for both electrodes
-    sw_min{1} = summary(st,3,:) * 2;
-    sw_num{1} = summary(st,4,:);
+    scored_min{1} = s_ep_good(st,:) * 2;
+    scored_min{2} = s_ep_good(st,:) * 2; % identical for both electrodes
+    sw_min{1} = s_sw_Fpz_ep(st,:) * 2;
+    sw_num{1} = s_sw_Fpz(st,:);
     sw_den{1} = sw_num{1} ./ sw_min{1};
-    sw_min{2}  = summary(st,5,:) * 2;
-    sw_num{2}  = summary(st,6,:);
-    sw_den{2}  = sw_num{2} ./ sw_min{2};
+    sw_min{2} = s_sw_Cz_ep(st,:) * 2;
+    sw_num{2} = s_sw_Cz(st,:);
+    sw_den{2} = sw_num{2} ./ sw_min{2};
     
-    goodsw_num{1} = summary(st,7,:);
-    goodsw_num{2} = summary(st,8,:);
+    goodsw_num{1} = s_sw_Fpz_good(st,:);
+    goodsw_num{2} = s_sw_Cz_good(st,:);
     rejerate{1} = (sw_num{1} - goodsw_num{1}) ./ sw_num{1} * 100;
     rejerate{2} = (sw_num{2} - goodsw_num{2}) ./ sw_num{2} * 100;
     %---------------------------%
@@ -149,27 +162,26 @@ for g = 1:numel(opt.grp)
   output = [output sprintf('GROUP EXCEL: %s\n', opt.grp(g).name)];
   output = [output sprintf('--------------------------------------------------\n')];
   
-  %---------------------------%
-  %-all slow waves
-  sw_all{1} = squeeze(sum(summary(:,4,:),1));
-  sw_all{2} = squeeze(sum(summary(:,6,:),1));
-  
-  for c = 1:numel(chan)
-    output = [output sprintf('---\nChan %s\n', chan{c})];
-    id_sw = cat(1, opt.grp(g).subj, squeeze(sw_all{c})');
-    output = [output sprintf('% 5d\t% 5d\n', id_sw)];
-  end
-  %---------------------------%
-  
-  %---------------------------%
-  %-only good slow waves
-  sw_good{1} = squeeze(sum(summary(:,7,:),1));
-  sw_good{2} = squeeze(sum(summary(:,8,:),1));
-  for c = 1:numel(chan)
-    output = [output sprintf('---\nChan %s\n', chan{c})];
-    id_sw = cat(1, opt.grp(g).subj, squeeze(sw_all{c})');
-    output = [output sprintf('% 5d\t% 5d\n', id_sw)];
-  end
+  sw_col = [opt.grp(g).subj
+    sum(s_ep_all)
+    sum(s_ep_good)
+    sum(s_ep_bad)
+    sum(s_ep_percent)
+    sum(s_sw_Fpz_ep)
+    sum(s_sw_Fpz)
+    (sum(s_sw_Fpz) ./ sum(s_sw_Fpz_ep) /2)
+    sum(s_sw_Fpz_good)
+    ((sum(s_sw_Fpz) - sum(s_sw_Fpz_good)) ./ sum(s_sw_Fpz) * 100)
+    sum(s_sw_Cz_ep)
+    sum(s_sw_Cz)
+    (sum(s_sw_Cz) ./ sum(s_sw_Cz_ep) /2)
+    sum(s_sw_Cz_good)
+    ((sum(s_sw_Cz) - sum(s_sw_Cz_good)) ./ sum(s_sw_Cz) * 100)
+    ];
+  output = [output sprintf(['subjid\tscored epochs\tscored epochs (good)\tscored epochs (bad)\tpercent bad epochs\t' ...
+    'epochs with at least one Fpz sw\tn sw at Fpz\tsw density at Fpz (sw per min)\tn good sw at Fpz\tn percent bad sw at Fpz\t', ...
+    'epochs with at least one Cz sw\tn sw at Cz\tsw density at Cz (sw per min)\tn good sw at Cz\tn percent bad sw at Cz\n'])];
+  output = [output sprintf('% 5d\t% 5d\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\n', sw_col)];
   %-------------------------------------%
   
 end
