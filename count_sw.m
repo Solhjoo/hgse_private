@@ -107,12 +107,12 @@ for g = 1:numel(opt.grp)
     
     %---------------------------%
     %-values
-    scored_min{1} = s_ep_good(st,:) * 2;
-    scored_min{2} = s_ep_good(st,:) * 2; % identical for both electrodes
-    sw_min{1} = s_sw_Fpz_ep(st,:) * 2;
+    scored_min{1} = s_ep_good(st,:) / 2;
+    scored_min{2} = s_ep_good(st,:) / 2; % identical for both electrodes
+    sw_min{1} = s_sw_Fpz_ep(st,:) / 2;
     sw_num{1} = s_sw_Fpz(st,:);
     sw_den{1} = sw_num{1} ./ sw_min{1};
-    sw_min{2} = s_sw_Cz_ep(st,:) * 2;
+    sw_min{2} = s_sw_Cz_ep(st,:) / 2;
     sw_num{2} = s_sw_Cz(st,:);
     sw_den{2} = sw_num{2} ./ sw_min{2};
     
