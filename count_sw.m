@@ -9,12 +9,21 @@ function count_sw(info, opt)
 %    .subj: index of the subjects
 %    .name: name of the group
 %  .stage: stage of interest [2 3 4]
+%  .ndetmet: n of methods to detect bad epochs
 
 %---------------------------%
 %-start log
 output = sprintf('%s began at %s on %s\n', ...
   mfilename,  datestr(now, 'HH:MM:SS'), datestr(now, 'dd-mmm-yy'));
 tic_t = tic;
+%---------------------------%
+
+%---------------------------%
+%-the code is too hard-coded to change the number of methods used to detect
+% bad slow waves
+if opt.ndetmet ~= 4
+  output = [output sprintf('ERROR: sorry you need to use the 4 methods to detect bad slow waves, it''s hard-coded\n')];
+end
 %---------------------------%
 
 %-----------------------------------------------%
@@ -29,10 +38,12 @@ for g = 1:numel(opt.grp)
   s_sw_Fpz_ep = nan(numel(opt.stage), numel(opt.grp(g).subj)); % epochs with slow waves
   s_sw_Fpz = nan(numel(opt.stage), numel(opt.grp(g).subj));
   s_sw_Fpz_good = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_sw_Fpz_ndet = nan(opt.ndetmet, numel(opt.grp(g).subj));
   
   s_sw_Cz_ep = nan(numel(opt.stage), numel(opt.grp(g).subj)); % epochs with slow waves
   s_sw_Cz = nan(numel(opt.stage), numel(opt.grp(g).subj));
   s_sw_Cz_good = nan(numel(opt.stage), numel(opt.grp(g).subj));
+  s_sw_Cz_ndet = nan(opt.ndetmet, numel(opt.grp(g).subj));
   
   %-------------------------------------%
   %-loop over subjects
@@ -78,6 +89,8 @@ for g = 1:numel(opt.grp)
     dfile = dir([ddir '*-Fpz_A_B_C.mat']);
     if ~isempty(dfile)
       load([ddir dfile(1).name])
+      
+      s_sw_Fpz_ndet(:,s) = [data.cfg.ndet.n];
       for st = 1:numel(opt.stage)
         s_sw_Fpz_good(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
@@ -86,6 +99,8 @@ for g = 1:numel(opt.grp)
     dfile = dir([ddir '*-Cz_A_B_C.mat']);
     if ~isempty(dfile)
       load([ddir dfile(1).name])
+      
+      s_sw_Cz_ndet(:,s) = [data.cfg.ndet.n];
       for st = 1:numel(opt.stage)
         s_sw_Cz_good(st,s) = numel(find(data.trialinfo(:,2) == opt.stage(st)));
       end
@@ -172,16 +187,27 @@ for g = 1:numel(opt.grp)
     (sum(s_sw_Fpz) ./ sum(s_sw_Fpz_ep) /2)
     sum(s_sw_Fpz_good)
     ((sum(s_sw_Fpz) - sum(s_sw_Fpz_good)) ./ sum(s_sw_Fpz) * 100)
+    s_sw_Fpz_ndet(1,:) % var
+    s_sw_Fpz_ndet(2,:) % range
+    s_sw_Fpz_ndet(3,:) % diff
+    s_sw_Fpz_ndet(4,:) % highvar
     sum(s_sw_Cz_ep)
     sum(s_sw_Cz)
     (sum(s_sw_Cz) ./ sum(s_sw_Cz_ep) /2)
     sum(s_sw_Cz_good)
     ((sum(s_sw_Cz) - sum(s_sw_Cz_good)) ./ sum(s_sw_Cz) * 100)
+    s_sw_Cz_ndet(1,:) % var
+    s_sw_Cz_ndet(2,:) % range
+    s_sw_Cz_ndet(3,:) % diff
+    s_sw_Cz_ndet(4,:) % highvar
     ];
   output = [output sprintf(['subjid\tscored epochs\tscored epochs (good)\tscored epochs (bad)\tpercent bad epochs\t' ...
     'epochs with at least one Fpz sw\tn sw at Fpz\tsw density at Fpz (sw per min)\tn good sw at Fpz\tn percent bad sw at Fpz\t', ...
-    'epochs with at least one Cz sw\tn sw at Cz\tsw density at Cz (sw per min)\tn good sw at Cz\tn percent bad sw at Cz\n'])];
-  output = [output sprintf('% 5d\t% 5d\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\n', sw_col)];
+    'detect (var)\tdetect (range)\tdetect (diff)\tdetect (highvar)\t', ...
+    'epochs with at least one Cz sw\tn sw at Cz\tsw density at Cz (sw per min)\tn good sw at Cz\tn percent bad sw at Cz', ...
+    'detect (var)\tdetect (range)\tdetect (diff)\tdetect (highvar)\t', ...
+    '\n'])];
+  output = [output sprintf('% 5d\t% 5d\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 5d\t% 5d\t% 5d\t% 5d\t% 6.2f\t% 5d\t% 6.2f\t% 5d\t% 5d\t% 5d\t% 5d\n', sw_col)];
   %-------------------------------------%
   
 end

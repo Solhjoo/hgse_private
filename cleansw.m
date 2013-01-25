@@ -136,10 +136,13 @@ for i = 1:numel(dnames)
   
   %--------------------------%
   %-output
+  ndet = zeros(numel(opt.cleansw.auto), 1);
   for m = 1:numel(opt.cleansw.auto)
     
+    ndet(m) = numel(find(~oktrial(:,m)));
+    
     outtmp = sprintf('    with %s (% 6d), rejected epochs #% 4d out of% 4d (min % 5.2f, median % 5.2f, mean % 5.2f, std % 5.2f, max % 5.2f)\n', ...
-      opt.cleansw.auto(m).met, opt.cleansw.auto(m).thr, numel(find(~oktrial(:,m))), numel(oktrial(:,m)), ...
+      opt.cleansw.auto(m).met, opt.cleansw.auto(m).thr, ndet(m), numel(oktrial(:,m)), ...
       min(val(:,m)), median(val(:,m)), mean(val(:,m)), std(val(:,m)), max(val(:,m)));
     output = [output outtmp];
     
@@ -163,6 +166,17 @@ for i = 1:numel(dnames)
   data.time = data.time(oktrial);
   data.sampleinfo = data.sampleinfo(oktrial,:);
   data.trialinfo = data.trialinfo(oktrial,:);
+  %--------------------------%
+  
+  %--------------------------%
+  %-keep track of the rejections
+  cfg = [];
+  cfg.previous = data.cfg;
+  for m = 1:numel(opt.cleansw.auto)
+    cfg.ndet(m).method = opt.cleansw.auto(m).met;
+    cfg.ndet(m).n = ndet(m);
+  end
+  data.cfg = cfg;
   %--------------------------%
   
   %--------------------------%
